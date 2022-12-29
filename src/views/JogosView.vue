@@ -1,13 +1,33 @@
 <script setup>
-import { ref } from "vue"
+import { ref, computed } from "vue"
 import useMegaSenaStore from "@/store/megasena"
 import TheHeader from "@/components/TheHeader.vue"
-import {useGeradorJogos} from "@/composables/useGeradorJogos"
-const { megaSena } = useGeradorJogos()
+import { useGeradorJogos } from "@/composables/useGeradorJogos"
+import useConcluiJogo from "@/composables/useConcluiJogo"
+
+const { megaSena, geraCartelas } = useGeradorJogos()
 const megaSenaStore = useMegaSenaStore()
 
 const jogosAleatorios = ref([])
 const cartelas = ref(null);
+
+const getJogos = () => {
+    let jogos = ""
+    if (jogosAleatorios.value.length) {
+        jogos = jogosAleatorios.value.reduce((a, c) => {
+            a.push(c.join(" - "))
+            return a
+        }, []).join("\n")
+    }
+    
+    if (cartelas.value.length) {
+        jogos = cartelas.value.reduce((a, c) => {
+            a.push(c.escolhidos.join(" - "))
+            return a
+        }, []).join("\n")
+    }    
+    return jogos
+}
 
 const handleClickAleatorios = () => geraJogos()
 
@@ -18,12 +38,7 @@ const geraJogos = () => {
 
 const handleClickEscolher = () => {
     jogosAleatorios.value = []
-    const qtdeJogos = prompt("Quantos jogos quer fazer?")
-    let qtdeNumeros = prompt("Quantos números por jogo?")
-    if(qtdeNumeros < 6 || qtdeNumeros > 20) {
-        qtdeNumeros = prompt("Quantos números por jogo? Mínimo 6 e máximo 20 números.")
-    }
-    cartelas.value = Array.from({ length: qtdeJogos }).map(c => ({ escolhidos: [], qtdeNumeros, fields: Array.from({ length: 60 }).map((_, idx) => idx+1) }))
+    cartelas.value = geraCartelas()
 }
 
 const addNumber = (number, limit, collection) => {
@@ -34,6 +49,13 @@ const deleteNumber = (number, collection) => {
     collection = Array.from(collection).filter(n => n !== number)
     return collection
 }
+
+const { enviaJogo } = useConcluiJogo()
+const temJogos = computed(() => {
+    return !!cartelas.value?.filter(c => !!c.escolhidos.length).length || !!jogosAleatorios.value?.length
+})
+
+console.log(temJogos)
 </script>
 
 <template>
@@ -46,7 +68,7 @@ const deleteNumber = (number, collection) => {
             <button class="bg-black" @click="handleClickEscolher">Escolher números</button>
         </div>
         <div class="wrapper">
-            <div v-if="!!jogosAleatorios.length">                
+            <div v-if="jogosAleatorios && !!jogosAleatorios.length">                
                 <div>
                     <p class="text-xs italic text-gray-400 text-center">* números marcados de amarelo foram sorteados nos últimos 10 anos</p>
                 </div>
@@ -57,7 +79,7 @@ const deleteNumber = (number, collection) => {
                 </div>
             </div>
             
-            <div v-if="cartelas" class="flex flex-wrap justify-center gap-4">                
+            <div v-if="cartelas?.length" class="flex flex-wrap justify-center gap-4">                
                 <div class="min-w-[325px] max-w-[325px] md:max-w-[366px] ring ring-slate-400/50  rounded p-1" v-for="(c, idx) in cartelas">
                     <h3 class="text-center my-2 font-bold uppercase">Jogo {{ idx+1 }}</h3>
                     <div class="flex flex-wrap gap-1">                            
@@ -71,10 +93,24 @@ const deleteNumber = (number, collection) => {
                 </div>
             </div>
         </div>
+        <footer v-if="temJogos">
+            <div class="mb-16">&nbsp;</div>
+            <div class="footer_wrapper bg-white fixed bottom-0 left-0 w-full p-4 text-center">  
+                <button class="text-xl bg-green-700 text-white" @click="enviaJogo(getJogos())">
+                    Enviar jogo
+                </button>
+            </div>
+        </footer>
     </main>
 </template>
 
 <style lang="scss">
+main {
+    @apply mb-24
+}
+.footer_wrapper {
+    box-shadow: 0 -3px 16px rgba(0,0,0,0.25)
+}
 .cartela__footer {
     @apply bg-slate-300 p-2 text-center rounded mt-1;
     

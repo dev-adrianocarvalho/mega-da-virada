@@ -8,12 +8,15 @@ export const useGeradorJogos = () => {
     
     const getQtdeNumeros = () => {
         let numero = prompt("Quantos números por jogo? Mínimo 6 e máximo 20.")
-        if (numero < 6 || numero > 20) numero = getQtdeNumeros()
+        if (!!numero && (numero < 6 || numero > 20)) numero = getQtdeNumeros()
         return numero
     }
     
     const megaSena = () => {
         regras.qtdeJogos = prompt("Quantos jogos quer fazer?")
+        
+        if(!regras.qtdeJogos) return;
+        
         regras.qtdeNumeros = getQtdeNumeros()
         
         return Array.from({length: regras.qtdeJogos})
@@ -29,7 +32,19 @@ export const useGeradorJogos = () => {
             }, []).sort((a, b) => a - b))
     }
     
+    const geraCartelas = () => {
+        regras.qtdeJogos = prompt("Quantos jogos quer fazer?")
+        
+        if(!regras.qtdeJogos) return;
+        
+        regras.qtdeNumeros = getQtdeNumeros()
+        
+        return Array.from({ length: regras.qtdeJogos }).map(c => ({ escolhidos: [], qtdeNumeros: regras.qtdeNumeros, fields: Array.from({ length: 60 }).map((_, idx) => idx+1) }))
+    }
+    
     return {
-        megaSena
+        megaSena,
+        getQtdeNumeros,
+        geraCartelas
     }
 }
