@@ -12,7 +12,8 @@ const getHighs = anos => {
     2: "warm",
     3: "hot"
   };
-  const many = Number(anos.split(',').length)
+  const length = anos.split(',').length
+  const many = Number(length > 3 ? 3 : length)
   
   return howHigh[many]
 }
