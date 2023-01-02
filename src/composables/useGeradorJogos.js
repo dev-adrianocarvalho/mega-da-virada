@@ -22,7 +22,7 @@ export const useGeradorJogos = () => {
         return Array.from({length: regras.qtdeJogos})
             .map(n => Array.from({length: regras.qtdeNumeros}).reduce((a, c) => {
                 const rnd = (max) => {
-                    let n = Math.ceil(Math.random() * (max+1))
+                    let n = Math.ceil(Math.random() * max)
                     if (a.includes(n)) n = rnd(max)
                     return n
                 }

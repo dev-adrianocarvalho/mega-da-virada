@@ -1,9 +1,12 @@
 <script setup>
 import { ref, computed } from "vue"
+import { useRoute } from "vue-router"
 import useMegaSenaStore from "@/store/megasena"
 import TheHeader from "@/components/TheHeader.vue"
 import { useGeradorJogos } from "@/composables/useGeradorJogos"
 import useConcluiJogo from "@/composables/useConcluiJogo"
+
+const { query } = useRoute()
 
 const { megaSena, geraCartelas } = useGeradorJogos()
 const megaSenaStore = useMegaSenaStore()
@@ -50,12 +53,10 @@ const deleteNumber = (number, collection) => {
     return collection
 }
 
-const { enviaJogo } = useConcluiJogo()
+const { enviaJogo } = useConcluiJogo(Boolean(Number(query.withPhone)))
 const temJogos = computed(() => {
     return !!cartelas.value?.filter(c => !!c.escolhidos.length).length || !!jogosAleatorios.value?.length
 })
-
-console.log(temJogos)
 </script>
 
 <template>
