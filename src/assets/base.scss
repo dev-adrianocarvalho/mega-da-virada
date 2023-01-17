@@ -103,3 +103,7 @@ button {
 main {
   @apply my-8
 }
+
+.container {
+  @apply px-8 xl:px-0 md:mx-auto;
+}

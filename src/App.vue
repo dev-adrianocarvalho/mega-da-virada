@@ -11,6 +11,7 @@ const menu = useMenu()
     <div class="menu-wrapper" :class="{'w-0': !menu.isOpen, 'min-w-[240px] px-2': menu.isOpen}">      
       <div class="menu flex flex-col w-full">      
         <RouterLink to="/">Início</RouterLink>
+        <RouterLink to="/megasena">Mega Sena</RouterLink>
         <RouterLink to="/resultados">Histórico</RouterLink>
         <RouterLink to="/jogos">Jogos</RouterLink>
       </div>
